@@ -1,24 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
+import { Container, Col, Row } from 'react-bootstrap';
+import { LoginForm } from './components/LoginForm/LoginForm';
+import { CodeForm } from './components/CodeForm/CodeForm';
+import { CodeList } from './components/CodeList/CodeList';
+
+import { ToastContainer } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Container className="p-2">
+        <LoginForm />
+        <CodeForm />
+        <CodeList />
+      </Container>
+      <ToastContainer position="bottom-right" />
+    </>
   );
 }
 
