@@ -1,0 +1,33 @@
+.form {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+    background: #C8E6FF;
+    border-bottom: 1px solid #C1DDF5;
+    z-index: 10;
+}
+
+.col {
+    position: relative;
+    display: flex;
+    margin-bottom: 1rem;
+
+    @media (min-width: 768px) {
+        margin-bottom: 0;
+    }
+}
+
+.view {
+    position: absolute;
+    top: 50%;
+    right: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex!important;
+    justify-content: center;
+    align-items: center;
+
+    transform: translateY(-50%);
+}

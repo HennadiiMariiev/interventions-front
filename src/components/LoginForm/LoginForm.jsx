@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form, Row, Col } from 'react-bootstrap';
 import api from '../../api/axios';
 import { toastMessage } from './../../helpers/toast.helper';
+import styles from './styles.module.scss';
 
-const COLORS = { success: '#CAF1A9', error: '#DFD0BE' };
-
-export function LoginForm() {
+export function LoginForm({ onCodeChange }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [toast, setToast] = useState({ message: 'Login successfull', color: COLORS.success, show: false });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (refreshToken && accessToken) {
+      setIsLoggedIn(true);
+      toastMessage('success', `Вы успешно залогинены!`);
+      api.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
+    }
+  }, []);
 
   const onChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -27,12 +36,16 @@ export function LoginForm() {
         if (res.status === 200) {
           localStorage.setItem('refreshToken', res.data.data.refreshToken);
           localStorage.setItem('accessToken', res.data.data.accessToken);
+
+          // api.options
+          api.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.data.accessToken;
+
           toastMessage('success', `Вы успешно вошли!`);
           setIsLoggedIn(true);
+          onCodeChange();
         }
       } catch (error) {
         toastMessage('error', `Неправильный email или пароль`);
-        setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 5000);
       }
     } else {
       try {
@@ -48,7 +61,6 @@ export function LoginForm() {
         }
       } catch (error) {
         toastMessage('error', `Неправильные данные`);
-        setTimeout(() => setToast((prev) => ({ ...prev, show: false })), 5000);
       }
     }
   };
@@ -60,20 +72,9 @@ export function LoginForm() {
   };
 
   return (
-    <Form
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        padding: '1rem',
-        backgroundColor: '#C8E6FF',
-        borderBottom: '1px solid #C1DDF5',
-      }}
-      onSubmit={onSubmit}
-    >
+    <Form className={styles.form} onSubmit={onSubmit}>
       <Row>
-        <Col>
+        <Col sm="6" md="4" className={styles.col}>
           <Form.Control
             type="email"
             placeholder="Почта"
@@ -84,7 +85,7 @@ export function LoginForm() {
           />
         </Col>
 
-        <Col>
+        <Col sm="6" md="4" className={styles.col}>
           <Form.Control
             id="password"
             type="password"
@@ -94,12 +95,12 @@ export function LoginForm() {
             onChange={onChange}
             disabled={isLoggedIn}
           />
-        </Col>
-
-        <Col>
-          <Button variant="primary" style={{ marginRight: '1rem' }} onClick={togglePassword}>
+          <Button variant="primary" onClick={togglePassword} className={styles.view}>
             🧐
           </Button>
+        </Col>
+
+        <Col sm="6" md="4">
           <Button variant="primary" type="submit">
             {isLoggedIn ? 'Выйти' : 'Войти'}
           </Button>

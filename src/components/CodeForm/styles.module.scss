@@ -1,0 +1,13 @@
+.form {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.col {
+    display: flex;
+    margin-bottom: 1rem;
+
+    @media (min-width: 578px) {
+        margin-bottom: 0;
+    }
+}

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Button, Form, Row, Col, Container } from 'react-bootstrap';
 import api from '../../api/axios';
 import { toastMessage } from './../../helpers/toast.helper';
+import styles from './styles.module.scss';
 
-export function CodeForm() {
+export function CodeForm({ onCodeChange }) {
   const [code, setCode] = useState({ text: '', id: null });
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
   const [undoButtonDisabled, setUndoButtonDisabled] = useState(true);
@@ -25,6 +26,8 @@ export function CodeForm() {
           setCode((prev) => ({ ...prev, id: null }));
           toastMessage('success', `Код успешно удален`);
           setUndoButtonDisabled(true);
+
+          onCodeChange();
         }
       } catch (error) {
         toastMessage('error', `Ошибка: ${error.message}`);
@@ -47,6 +50,8 @@ export function CodeForm() {
           setAddButtonDisabled(true);
           setUndoButtonDisabled(false);
           toastMessage('success', `Код ${code.text} успешно добавлен`);
+
+          onCodeChange();
         }
       } catch (error) {
         toastMessage('error', `Ошибка: ${error.message}`);
@@ -56,18 +61,13 @@ export function CodeForm() {
   };
 
   return (
-    <Form
-      style={{
-        width: '100%',
-        margin: '5rem 0 1rem',
-      }}
-    >
+    <Form className={styles.form}>
       <Container>
         <Row>
-          <h5>Добавление кода</h5>
+          <h4 className="mb-2">Добавление кода</h4>{' '}
         </Row>
         <Row>
-          <Col>
+          <Col sm="6" md="6" className={styles.col}>
             <Form.Control type="text" placeholder="Код" id="code" value={code.text} onChange={onChange} />
           </Col>
 
