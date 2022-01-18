@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Form, Row, Col } from 'react-bootstrap';
-import api from '../../api/axios';
-import { toastMessage } from './../../helpers/toast.helper';
-import styles from './styles.module.scss';
+import React, { useState, useEffect } from "react";
+import { Button, Form, Row, Col } from "react-bootstrap";
+import api from "../../api/axios";
+import { toastMessage } from "./../../helpers/toast.helper";
+import styles from "./styles.module.scss";
 
 export function LoginForm({ onCodeChange }) {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem("refreshToken");
+    const accessToken = localStorage.getItem("accessToken");
 
     if (refreshToken && accessToken) {
       setIsLoggedIn(true);
-      toastMessage('success', `Вы успешно залогинены!`);
-      api.defaults.headers.common['Authorization'] = 'Bearer ' + accessToken;
+      toastMessage("success", `Вы успешно залогинены!`);
     }
   }, []);
 
@@ -28,47 +27,44 @@ export function LoginForm({ onCodeChange }) {
 
     if (!isLoggedIn) {
       try {
-        const res = await api.post('/users/login', {
+        const res = await api.post("/users/login", {
           email: formData.email,
           password: formData.password,
         });
 
         if (res.status === 200) {
-          localStorage.setItem('refreshToken', res.data.data.refreshToken);
-          localStorage.setItem('accessToken', res.data.data.accessToken);
+          localStorage.setItem("refreshToken", res.data.data.refreshToken);
+          localStorage.setItem("accessToken", res.data.data.accessToken);
 
-          // api.options
-          api.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.data.accessToken;
-
-          toastMessage('success', `Вы успешно вошли!`);
+          toastMessage("success", `Вы успешно вошли!`);
           setIsLoggedIn(true);
           onCodeChange();
         }
       } catch (error) {
-        toastMessage('error', `Неправильный email или пароль`);
+        toastMessage("error", `Неправильный email или пароль`);
       }
     } else {
       try {
-        const res = await api.post('/users/logout', {
-          refreshToken: localStorage.getItem('refreshToken'),
+        const res = await api.post("/users/logout", {
+          refreshToken: localStorage.getItem("refreshToken"),
         });
 
         if (res.status === 204) {
-          localStorage.setItem('refreshToken', '');
-          localStorage.setItem('accessToken', '');
-          toastMessage('success', `Вы успешно вышли!`);
+          localStorage.setItem("refreshToken", "");
+          localStorage.setItem("accessToken", "");
+          toastMessage("success", `Вы успешно вышли!`);
           setIsLoggedIn(false);
         }
       } catch (error) {
-        toastMessage('error', `Неправильные данные`);
+        toastMessage("error", `Неправильные данные`);
       }
     }
   };
 
   const togglePassword = () => {
-    const passwordInput = document.querySelector('#password');
+    const passwordInput = document.querySelector("#password");
     const type = passwordInput.type;
-    passwordInput.type = type === 'text' ? 'password' : 'text';
+    passwordInput.type = type === "text" ? "password" : "text";
   };
 
   return (
@@ -95,14 +91,18 @@ export function LoginForm({ onCodeChange }) {
             onChange={onChange}
             disabled={isLoggedIn}
           />
-          <Button variant="primary" onClick={togglePassword} className={styles.view}>
+          <Button
+            variant="primary"
+            onClick={togglePassword}
+            className={styles.view}
+          >
             🧐
           </Button>
         </Col>
 
         <Col sm="6" md="4">
           <Button variant="primary" type="submit">
-            {isLoggedIn ? 'Выйти' : 'Войти'}
+            {isLoggedIn ? "Выйти" : "Войти"}
           </Button>
         </Col>
       </Row>

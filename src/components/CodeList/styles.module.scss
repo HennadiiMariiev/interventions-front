@@ -1,25 +1,35 @@
 .td {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100%;
 }
 
 .item {
-    margin-bottom: 0;
-    padding: 0.25rem 0;
+  margin-bottom: 0;
+  padding: 0.25rem 0;
 }
 
 .month {
-    vertical-align: middle;
-    font-weight: 600;
+  vertical-align: middle;
+  font-weight: 600;
+}
+
+.last {
+  padding: 0.5rem 1rem;
+  margin: 0;
+}
+
+.list_item {
+  list-style: none;
+  display: flex;
 }
 
 .subtitle {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 
-    @media (min-width: 578px) {
-        margin-bottom: 0;
-    }
+  @media (min-width: 578px) {
+    margin-bottom: 0;
+  }
 }
