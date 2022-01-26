@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Button, Row, Col, Container, Spinner } from "react-bootstrap";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { Button, Row, Col, Container, Spinner, Form } from "react-bootstrap";
 
 import api from "../../api/axios";
 import { CodeTable } from "./CodeTable";
@@ -9,13 +9,28 @@ import styles from "./styles.module.scss";
 export function CodeList({ onCodeChange, isFetching }) {
   const [data, setData] = useState({ result: [], total: 0 });
   const [lastFive, setLastFive] = useState([]);
-  // const [isCurrentMonth, setIsCurrentMonth] = useState(false);
-  // const monthSwitch = document.querySelector("#switch-month");
+  const [isCurrentMonth, setIsCurrentMonth] = useState(false);
+
+  useEffect(() => {
+    const isCurMonthFromLocStor = localStorage.getItem("is_current_month");
+    if (isCurMonthFromLocStor) {
+      setIsCurrentMonth(isCurMonthFromLocStor === "true" ? true : false);
+    } else {
+      localStorage.setItem("is_current_month", "false");
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("is_current_month", isCurrentMonth);
+    document.querySelector("#switch-month").checked = isCurrentMonth;
+  }, [isCurrentMonth]);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const resAll = await api.get("/interventions");
+        const resAll = await api.get(
+          `/interventions?is_current_month=${isCurrentMonth}`
+        );
         const resLastFive = await api.get("/interventions/last_five");
 
         if (resAll.status === 200) {
@@ -37,25 +52,13 @@ export function CodeList({ onCodeChange, isFetching }) {
     if (isFetching) {
       fetchData();
     }
-  }, [isFetching, onCodeChange]);
-
-  // useEffect(() => {
-  //   const currentMonth = new Date().getMonth();
-
-  //   const result = data.result.filter((el, index) =>
-  //     monthSwitch.checked ? index === currentMonth : el
-  //   );
-
-  //   isCurrentMonth
-  //     ? setData((prev) => ({ ...prev, result }))
-  //     : onCodeChange(true);
-  // }, [isCurrentMonth]);
+  }, [isFetching, onCodeChange, isCurrentMonth]);
 
   const refreshTable = async () => {
     onCodeChange(true);
   };
 
-  const prepareCodeItems = (codes, itemName) => {
+  const prepareCodeItems = useCallback((codes, itemName) => {
     if (!codes.length) {
       return <p className={styles.item}>-</p>;
     }
@@ -65,30 +68,36 @@ export function CodeList({ onCodeChange, isFetching }) {
         {item[itemName]}
       </p>
     ));
-  };
+  }, []);
 
-  const prepareTable = () => {
-    return data.result.map((elem, index) => (
-      <tbody key={index}>
-        <tr rowSpan={elem.codes.length || 1}>
-          <td className={styles.month}>{index + 1}</td>
-          <td className={styles.month}>{elem.month.toUpperCase()}</td>
-          <td className={styles.td}>{prepareCodeItems(elem.codes, "code")}</td>
-          <td>{prepareCodeItems(elem.codes, "amount")}</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td>
-            <b>Всего:</b>
-          </td>
-          <td>
-            <b>{elem.total}</b>
-          </td>
-        </tr>
-      </tbody>
-    ));
-  };
+  const resultTable = useMemo(() => {
+    const currentMonth = new Date().getMonth();
+
+    return data.result
+      .map((elem, index) => (
+        <tbody key={index}>
+          <tr rowSpan={elem.codes.length || 1}>
+            <td className={styles.month}>{index + 1}</td>
+            <td className={styles.month}>{elem.month.toUpperCase()}</td>
+            <td className={styles.td}>
+              {prepareCodeItems(elem.codes, "code")}
+            </td>
+            <td>{prepareCodeItems(elem.codes, "amount")}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td>
+              <b>Всего:</b>
+            </td>
+            <td>
+              <b>{elem.total}</b>
+            </td>
+          </tr>
+        </tbody>
+      ))
+      .filter((el, index) => (isCurrentMonth ? index === currentMonth : el));
+  }, [data.result, prepareCodeItems, isCurrentMonth]);
 
   const prepareDate = (dateStr) => {
     const newDate = new Date(dateStr);
@@ -99,23 +108,6 @@ export function CodeList({ onCodeChange, isFetching }) {
       hour: "2-digit",
       minute: "2-digit",
     });
-    // .split(", ");
-    // const [date, time] = newDate
-    //   .toLocaleString("ru", {
-    //     day: "numeric",
-    //     month: "short",
-    //     year: "numeric",
-    //     hour: "2-digit",
-    //     minute: "2-digit",
-    //   })
-    //   .split(", ");
-    // // const [date, time] = newDate.toLocaleString("ru").split(", ");
-    // return (
-    //   <>
-    //     <span> в {time} </span>
-    //     <span> {date} </span>
-    //   </>
-    // );
   };
 
   const prepareLastFiveList = () => {
@@ -128,6 +120,11 @@ export function CodeList({ onCodeChange, isFetching }) {
     });
   };
 
+  const codeTable = useMemo(
+    () => <CodeTable data={resultTable} />,
+    [resultTable]
+  );
+
   return (
     <Container>
       <Row className="mb-2">
@@ -136,7 +133,21 @@ export function CodeList({ onCodeChange, isFetching }) {
         </Col>
       </Row>
       <Row className="mb-3">
-        {/* <Col sm="6" md="4" style={{ display: "flex", alignItems: "center" }}>
+        <Col sm="12" md="5">
+          <h5>Последние добавленные</h5>
+          <ul className={styles.last}>
+            {!isFetching && prepareLastFiveList()}
+          </ul>
+        </Col>
+        <Col
+          sm="6"
+          md="4"
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            marginBottom: "1rem",
+          }}
+        >
           <Form>
             <Form.Check
               type="switch"
@@ -147,14 +158,8 @@ export function CodeList({ onCodeChange, isFetching }) {
               }}
             />
           </Form>
-        </Col> */}
-        <Col sm="12" md="6">
-          <h5>Последние добавленные</h5>
-          <ul className={styles.last}>
-            {!isFetching && prepareLastFiveList()}
-          </ul>
         </Col>
-        <Col sm="12" md="6">
+        <Col sm="12" md="3">
           <Button variant="primary" onClick={refreshTable}>
             Обновить
           </Button>
@@ -173,7 +178,7 @@ export function CodeList({ onCodeChange, isFetching }) {
         />
       ) : (
         <>
-          <CodeTable data={prepareTable()} />
+          {codeTable}
           <h3>Всего кодов: {data.total}</h3>
         </>
       )}
