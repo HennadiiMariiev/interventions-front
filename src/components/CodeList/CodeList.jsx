@@ -155,6 +155,7 @@ export function CodeList({ onCodeChange, isFetching }) {
               label="Tекущий месяц"
               onChange={() => {
                 setIsCurrentMonth(!isCurrentMonth);
+                onCodeChange(true);
               }}
             />
           </Form>
