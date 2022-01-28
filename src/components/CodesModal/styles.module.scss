@@ -1,0 +1,51 @@
+// .modal {
+//   width: 100%;
+// }
+
+.backdrop {
+  width: 90vw;
+}
+
+.subtitle {
+  font-size: 1.25rem;
+}
+
+.codes_list {
+  padding: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+
+  @media (min-width: 568px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.codes_item {
+  width: 100%;
+
+  @media (min-width: 568px) {
+    width: 50%;
+  }
+}
+
+.codes_item:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+.codes_label {
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.codes_description {
+  font-size: 0.75rem;
+  margin-bottom: 0;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}

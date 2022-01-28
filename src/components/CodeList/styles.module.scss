@@ -17,12 +17,12 @@
 }
 
 .last {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   margin: 0;
 }
 
 .list_item {
-  list-style: none;
+  list-style: disc;
   display: flex;
 }
 
@@ -32,4 +32,9 @@
   @media (min-width: 578px) {
     margin-bottom: 0;
   }
+}
+
+.switch_month label,
+.switch_month input {
+  cursor: pointer;
 }

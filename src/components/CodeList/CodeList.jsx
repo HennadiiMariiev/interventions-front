@@ -148,7 +148,7 @@ export function CodeList({ onCodeChange, isFetching }) {
             marginBottom: "1rem",
           }}
         >
-          <Form>
+          <Form className={styles.switch_month}>
             <Form.Check
               type="switch"
               id="switch-month"

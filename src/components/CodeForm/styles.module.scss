@@ -1,13 +1,33 @@
 .form {
-    width: 100%;
-    margin-bottom: 2rem;
+  width: 100%;
+  margin-bottom: 1rem;
 }
 
 .col {
-    display: flex;
-    margin-bottom: 1rem;
+  display: flex;
+  margin-bottom: 1rem;
 
-    @media (min-width: 578px) {
-        margin-bottom: 0;
+  @media (min-width: 768px) {
+    margin-bottom: 0;
+  }
+}
+
+.button_group {
+  display: flex;
+  flex-wrap: wrap;
+
+  & button {
+    @media (max-width: 576px) {
+      margin-bottom: 1rem;
     }
+  }
+
+  & button:not(:last-child) {
+    margin-right: 1rem;
+  }
+
+  @media (min-width: 576px) {
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
 }
