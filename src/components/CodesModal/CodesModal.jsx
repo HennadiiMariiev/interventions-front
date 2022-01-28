@@ -63,6 +63,9 @@ export function CodesModal({ isModalOpen, closeModal, onCodeChange }) {
     );
   });
 
+  const firstHalfArr = codeChecks.splice(0, Math.round(codeChecks.length / 2));
+  // const secondHalfArr = codeChecks.splice(Math.round(codeChecks.length / 2));
+
   return (
     <Modal
       show={isModalOpen}
@@ -83,7 +86,12 @@ export function CodesModal({ isModalOpen, closeModal, onCodeChange }) {
             <p className={styles.subtitle}>Выберите коды.</p>
             {/* <Button variant="primary">Добавить</Button> */}
           </div>
-          <div className={styles.codes_list}>{codeChecks}</div>
+          <div className={styles.codes_wrapper}>
+            <div className={styles.codes_list}>{firstHalfArr}</div>
+            <div className={styles.codes_list}>{codeChecks}</div>
+          </div>
+
+          {/* <div className={styles.codes_list}>{secondHalfArr}</div> */}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={closeModal}>
